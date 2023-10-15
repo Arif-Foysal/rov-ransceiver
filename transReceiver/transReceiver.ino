@@ -18,15 +18,20 @@ Servo armServo;
 
 // REPLACE WITH THE MAC Address of your receiver
 uint8_t broadcastAddress[] = {0xAC, 0x67, 0xB2, 0x3C, 0x95, 0xD0};
-//below structure is outgoing
-typedef struct struct_message {
+//structure of incoming packet
+typedef struct struct_commands {
   byte potvalue;
-  char msg[50];
-} struct_message;
-// Create a struct_message called outgoingReadings to hold outgoing data
-struct_message outgoingReadings;
-// Create a struct_message called incomingReadings to hold incoming data
-struct_message incomingReadings;
+} struct_commands;
+
+// structure of the outgoing packet
+typedef struct struct_data {
+
+} struct_data;
+
+// Create a struct_commands called outgoingData to hold outgoing data
+struct_data outgoingData;
+// Create a struct_commands called incomingCommands to hold incoming data
+struct_commands incomingCommands;
 // Variable to store if sending data was successful
 String success;
 // Callback when data is sent
@@ -43,12 +48,11 @@ void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus) {
 
 // Callback when data is received
 void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
-  memcpy(&incomingReadings, incomingData, sizeof(incomingReadings));
+  memcpy(&incomingCommands, incomingData, sizeof(incomingCommands));
   Serial.print("Bytes received: ");
   Serial.println(len);
-  Serial.print("Data: "); Serial.println(incomingReadings.msg);
   Serial.println("Potentiometer Value Received:");
-  Serial.println(incomingReadings.potvalue);
+  Serial.println(incomingCommands.potvalue);
 }
 void setup() {
   //Init Servo
@@ -86,9 +90,9 @@ void loop() {
   if (currentMillis - previousMillis_arm >= interval_arm) {
     previousMillis_arm = currentMillis;  // Save the last time you sent the data
 
-    armServo.write(incomingReadings.potvalue);
+    armServo.write(incomingCommands.potvalue);
   }
 
 
-  // delay(500);
+
 }

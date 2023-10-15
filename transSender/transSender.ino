@@ -17,14 +17,13 @@
 // REPLACE WITH THE MAC Address of your receiver 2C:F4:32:70:13:54
 uint8_t broadcastAddress[] = {0x48, 0x3F, 0xDA, 0x5F, 0xDF, 0xEA};
 //below structure is outgoing
-typedef struct struct_message {
+typedef struct struct_commands {
   byte potvalue;
-  char msg[50];
-} struct_message;
-// Create a struct_message called outgoingReadings to hold outgoing data
-struct_message outgoingReadings;
-// Create a struct_message called incomingReadings to hold incoming data
-struct_message incomingReadings;
+} struct_commands;
+// Create a struct_commands called outgoingCommands to hold outgoing data
+struct_commands outgoingCommands;
+// Create a struct_commands called incomingData to hold incoming data
+struct_commands incomingData;
 // Variable to store if sending data was successful
 String success;
 // Callback when data is sent
@@ -41,10 +40,9 @@ void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus) {
 
 // Callback when data is received
 void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
-  memcpy(&incomingReadings, incomingData, sizeof(incomingReadings));
+  memcpy(&incomingData, incomingData, sizeof(incomingData));
   Serial.print("Bytes received: ");
   Serial.println(len);
-  Serial.print("Data: "); Serial.println(incomingReadings.msg);
 }
 void setup() {
   // Init Serial Monitor
@@ -80,11 +78,13 @@ void loop() {
     previousMillis_pot = currentMillis;  // Save the last time you sent the data
 
     // Your code to send data goes here
-  // strcpy(outgoingReadings.msg, "Hello from NodeMCU");
-  outgoingReadings.potvalue= map(analogRead(potPin) , 10, 1023, 0, 180);
+  // strcpy(outgoingCommands.msg, "Hello from NodeMCU");
+  outgoingCommands.potvalue= map(analogRead(potPin) , 10, 1023, 0, 180);
   Serial.println("Outgoing readings potentiometer value:");
-  Serial.println(outgoingReadings.potvalue);
-  esp_now_send(broadcastAddress, (uint8_t *) &outgoingReadings, sizeof(outgoingReadings));
+  Serial.println(outgoingCommands.potvalue);
+  esp_now_send(broadcastAddress, (uint8_t *) &outgoingCommands, sizeof(outgoingCommands));
   }
-  // delay(500);
+
+
+
 }
