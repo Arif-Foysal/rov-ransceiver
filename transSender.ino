@@ -15,7 +15,7 @@
 #define potPin A0
 
 // REPLACE WITH THE MAC Address of your receiver 2C:F4:32:70:13:54
-uint8_t broadcastAddress[] = {0x2C, 0xF4, 0x32, 0x70, 0x13, 0x54};
+uint8_t broadcastAddress[] = {0x48, 0x3F, 0xDA, 0x5F, 0xDF, 0xEA};
 //below structure is outgoing
 typedef struct struct_message {
   byte potvalue;
