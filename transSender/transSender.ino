@@ -21,9 +21,14 @@ typedef struct struct_commands {
   byte potvalue;
 } struct_commands;
 // Create a struct_commands called outgoingCommands to hold outgoing data
-struct_commands outgoingCommands;
 // Create a struct_commands called incomingData to hold incoming data
-struct_commands incomingData;
+typedef struct struct_data {
+byte data;
+} struct_data;
+
+struct_commands outgoingCommands;
+struct_commands inData;
+
 // Variable to store if sending data was successful
 String success;
 // Callback when data is sent
@@ -39,10 +44,14 @@ void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus) {
 }
 
 // Callback when data is received
+
 void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
-  memcpy(&incomingData, incomingData, sizeof(incomingData));
+  memcpy(&inData, incomingData, sizeof(inData));
   Serial.print("Bytes received: ");
   Serial.println(len);
+  Serial.println("Message received:");
+  // received=incomingData.data;
+Serial.println(inData.potvalue);
 }
 void setup() {
   // Init Serial Monitor
@@ -69,7 +78,7 @@ void setup() {
 }
 //delay management
 unsigned long previousMillis_pot = 0;  // Store the previous time
-const long interval_pot = 100;        // Set the interval_pot in milliseconds
+const long interval_pot = 50;        // Set the interval_pot in milliseconds
 //Note: previousMillis and interval should be different for every delay event
 void loop() {
   unsigned long currentMillis = millis();
@@ -83,8 +92,6 @@ void loop() {
   Serial.println("Outgoing readings potentiometer value:");
   Serial.println(outgoingCommands.potvalue);
   esp_now_send(broadcastAddress, (uint8_t *) &outgoingCommands, sizeof(outgoingCommands));
+
   }
-
-
-
 }

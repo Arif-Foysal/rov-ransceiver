@@ -17,7 +17,7 @@ Servo armServo;
 #define armServoPin D0
 
 // REPLACE WITH THE MAC Address of your receiver
-uint8_t broadcastAddress[] = {0xAC, 0x67, 0xB2, 0x3C, 0x95, 0xD0};
+uint8_t broadcastAddress[] = {0xC8, 0x2B, 0x96, 0x1C, 0xFE, 0x67};
 //structure of incoming packet
 typedef struct struct_commands {
   byte potvalue;
@@ -25,11 +25,13 @@ typedef struct struct_commands {
 
 // structure of the outgoing packet
 typedef struct struct_data {
-
+byte incInt;
 } struct_data;
 
 // Create a struct_commands called outgoingData to hold outgoing data
 struct_data outgoingData;
+
+
 // Create a struct_commands called incomingCommands to hold incoming data
 struct_commands incomingCommands;
 // Variable to store if sending data was successful
@@ -53,6 +55,8 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
   Serial.println(len);
   Serial.println("Potentiometer Value Received:");
   Serial.println(incomingCommands.potvalue);
+  armServo.write(incomingCommands.potvalue);
+
 }
 void setup() {
   //Init Servo
@@ -80,19 +84,19 @@ void setup() {
   // Register for a callback function that will be called when data is received
   esp_now_register_recv_cb(OnDataRecv);
 }
-//delay management
-unsigned long previousMillis_arm = 0;  // Store the previous time
-const long interval_arm = 15;        // Set the interval_arm in milliseconds
+//delay management//
+  //send delay
+  unsigned long previousMillis_send = 0;
+  const long interval_send = 100;
+//delay management end//
 //Note: previousMillis and interval should be different for every delay event
 void loop() {
   unsigned long currentMillis = millis();
-   // Check if it's time to send the data
-  if (currentMillis - previousMillis_arm >= interval_arm) {
-    previousMillis_arm = currentMillis;  // Save the last time you sent the data
 
-    armServo.write(incomingCommands.potvalue);
-  }
+  //send start
+  outgoingData.incInt=194;
+if (currentMillis - previousMillis_send >= interval_send) {
+  previousMillis_send=currentMillis;
+  esp_now_send(broadcastAddress, (uint8_t *) &outgoingData, sizeof(outgoingData));
 
-
-
-}
+}}
