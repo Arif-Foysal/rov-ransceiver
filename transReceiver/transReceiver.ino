@@ -13,14 +13,27 @@
 #include <Servo.h>
 Servo armServo;
 //define all the pins 
-#define potPin A0
 #define armServoPin D0
+
+
+
+
 
 // REPLACE WITH THE MAC Address of your receiver
 uint8_t broadcastAddress[] = {0xC8, 0x2B, 0x96, 0x1C, 0xFE, 0x67};
 //structure of incoming packet
 typedef struct struct_commands {
+  //pot value
   byte potvalue;
+//button status
+// Variable to store the state of the pushbutton
+  bool btnFwPressed=0;
+  bool btnBwPressed=0;
+  bool btnLeftPressed=0;
+  bool btnRightPressed=0;
+  bool btnTlPressed=0;
+  bool btnTrPressed=0;
+  bool btnSinkPressed=0; 
 } struct_commands;
 
 // structure of the outgoing packet
@@ -38,9 +51,9 @@ struct_commands incomingCommands;
 String success;
 // Callback when data is sent
 void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus) {
-  Serial.print("Last Packet Send Status: "); 
+  // Serial.print("Last Packet Send Status: "); 
   if (sendStatus == 0) {
-    Serial.println("Delivery success");
+    // Serial.println("Delivery success");
   }
 
   else {
@@ -53,10 +66,32 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
   memcpy(&incomingCommands, incomingData, sizeof(incomingCommands));
   Serial.print("Bytes received: ");
   Serial.println(len);
-  Serial.println("Potentiometer Value Received:");
+  // Serial.println("Potentiometer Value Received:");
   Serial.println(incomingCommands.potvalue);
   armServo.write(incomingCommands.potvalue);
 
+  //btn
+  if(incomingCommands.btnFwPressed){
+    Serial.println("Forward");
+  }
+  if(incomingCommands.btnBwPressed){
+    Serial.println("Backward");
+  }
+  if(incomingCommands.btnLeftPressed){
+    Serial.println("Left");
+  }
+  if(incomingCommands.btnRightPressed){
+    Serial.println("Right");
+  }
+  if(incomingCommands.btnTlPressed){
+    Serial.println("Tilt Left");
+  }
+  if(incomingCommands.btnTrPressed){
+    Serial.println("Tilt Right");
+  }
+  if(incomingCommands.btnSinkPressed){
+    Serial.println("Sink");
+  }
 }
 void setup() {
   //Init Servo
@@ -65,7 +100,7 @@ void setup() {
   // Init Serial Monitor
   Serial.begin(9600);
   //set pinmode
-  pinMode(potPin,INPUT);
+
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
